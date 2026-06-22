@@ -1,0 +1,33 @@
+# CodeBuild: use an image that includes Maven (e.g. aws/codebuild/amazonlinux2-x86_64-standard:5.0
+# or aws/codebuild/standard:7.0). Enable S3 cache if you use the cache section below.
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto21
+    commands:
+      - java -version
+      - mvn -version
+
+  pre_build:
+    commands:
+      - cd "$CODEBUILD_SRC_DIR/order-management" && echo "Building order-management"
+
+  build:
+    commands:
+      - cd "$CODEBUILD_SRC_DIR/order-management" && mvn -B clean package
+
+  post_build:
+    commands:
+      - echo "Build finished — JAR at order-management/target/"
+
+artifacts:
+  files:
+    - order-management/target/order-management-*.jar
+  discard-paths: true
+  name: order-management-build
+
+cache:
+  paths:
+    - "/root/.m2/**/*"
