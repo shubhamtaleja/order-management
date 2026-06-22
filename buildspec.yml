@@ -7,7 +7,7 @@ env:
   variables:
     AWS_DEFAULT_REGION: us-east-1
     IMAGE_REPO_NAME: order-management
-
+    
 phases:
   install:
     runtime-versions:
@@ -19,7 +19,7 @@ phases:
   pre_build:
     commands:
       - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-      - export REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+      - export REPOSITORY_URI=238599091011.dkr.ecr.us-east-1.amazonaws.com/order-management
       - export IMAGE_TAG="${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}"
       - echo "ECR target $REPOSITORY_URI"
       - echo Logging into ECR...
@@ -27,29 +27,12 @@ phases:
 
   build:
     commands:
-      - |
-        set -e
-        export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-        export REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
-        export IMAGE_TAG="${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}"
-        if [ -f pom.xml ]; then
-          echo "Using repo root (pom.xml here)"
-          MAVEN_DIR=.
-        elif [ -d projects/order-management ] && [ -f projects/order-management/pom.xml ]; then
-          echo "Using projects/order-management"
-          MAVEN_DIR=projects/order-management
-        elif [ -d order-management ] && [ -f order-management/pom.xml ]; then
-          echo "Using order-management/"
-          MAVEN_DIR=order-management
-        else
-          echo "Could not find pom.xml. Listing repo root:"
-          ls -la
-          exit 1
-        fi
-        cd "$MAVEN_DIR"
-        mvn -B clean package
-        docker build -t $IMAGE_REPO_NAME .
-        docker tag $IMAGE_REPO_NAME:latest $REPOSITORY_URI:$IMAGE_TAG
+      - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      - export REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+      - export IMAGE_TAG="${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}"
+      - mvn -B clean package
+      - docker build -t $IMAGE_REPO_NAME .
+      - docker tag $IMAGE_REPO_NAME:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
