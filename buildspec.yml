@@ -1,6 +1,7 @@
-# CodeBuild working directory = repository root (where GitHub checkouts land).
-# Supports either layout: pom.xml at repo root, or under order-management/, or projects/order-management/.
-# Docker/ECR: enable "Privileged" on the CodeBuild project.
+# CodeBuild working directory = repository root.
+# Supports: pom.xml at repo root, or projects/order-management/, or order-management/.
+# Docker: enable "Privileged" on the CodeBuild project (required for docker build).
+# Use build context `.` (current dir). Do NOT use `..` — that points at the parent folder and breaks the build.
 version: 0.2
 
 env:
@@ -31,7 +32,7 @@ phases:
       - export REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
       - export IMAGE_TAG="${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}"
       - mvn -B clean package
-      - docker build -t $IMAGE_REPO_NAME .
+      - docker build -t order-management .
       - docker tag $IMAGE_REPO_NAME:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
