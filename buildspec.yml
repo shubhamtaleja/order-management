@@ -4,7 +4,7 @@ version: 0.2
 
 env:
   variables:
-    AWS_DEFAULT_REGION: ap-south-1
+    AWS_DEFAULT_REGION: us-east-1
     IMAGE_REPO_NAME: order-management
     
 phases:
