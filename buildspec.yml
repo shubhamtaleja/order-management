@@ -6,7 +6,7 @@ env:
   variables:
     AWS_DEFAULT_REGION: ap-south-1
     IMAGE_REPO_NAME: order-management
-
+    
 phases:
   install:
     runtime-versions:
@@ -18,10 +18,9 @@ phases:
   pre_build:
     commands:
       - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-      - export REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+      - export REPOSITORY_URI=238599091011.dkr.ecr.us-east-1.amazonaws.com/order-management
       - export IMAGE_TAG="${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}"
       - echo "ECR target $REPOSITORY_URI"
-      - aws ecr describe-repositories --repository-names "$IMAGE_REPO_NAME" --region "$AWS_DEFAULT_REGION"
       - echo Logging into ECR...
       - aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin "$REPOSITORY_URI"
 
