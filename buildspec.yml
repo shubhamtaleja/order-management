@@ -19,6 +19,8 @@ phases:
 
   pre_build:
     commands:
+      - echo Logging into Docker Hub...
+      - docker login -u shubhamtaleja08 -p Shubh@1234
       - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
       - export REPOSITORY_URI=238599091011.dkr.ecr.us-east-1.amazonaws.com/order-management
       - export IMAGE_TAG="${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}"
